@@ -1,0 +1,47 @@
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Dependency directories
+node_modules/
+bower_components/
+
+# Build output
+dist/
+build/
+out/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg
+*.egg-info/
+.env
+
+# Visual Studio Code
+.vscode/
+
+# Environment variables
+.env
+.env.*
+
+# Coverage reports
+coverage/
+*.lcov
+
+# Misc
+*.swp
+*.swo
+*.tmp
+*.bak
+*.orig
+
+Project Structure
+.env
