@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from .models import CustomUser
 import re
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError as DjangoValidationError
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -41,15 +43,22 @@ class UserSerializer(serializers.ModelSerializer):
         if not re.search(r"[!@#$%^&*()_+=\-{};:'\",.<>?/\\|]", value):
             raise serializers.ValidationError("Password must contain at least one special character.")
         return value
-        
+    
     #Email.
-
-    #TODO: add email validation and password confirmation
     def validate_email(self, value):
-        pass
-        
+        # 1 Normalize and Check uniqueness.
+        mail = value.strip().lower()
+        if CustomUser.objects.filter(email==mail).exists():
+            raise serializers.ValidationError("Email already in  use.")
+        # 2 Check format.
+        try:
+            validate_email(value)
+        except DjangoValidationError:
+            raise serializers.ValidationError("Email is not valid.")
+       
 
 #Object-level validation.
+    #Password.
     def validate(self, data):
         if data['password'] != data['password_confirm']:
             raise serializers.ValidationError("Passwords do not match.")
