@@ -1,13 +1,14 @@
 from rest_framework import serializers
-from .models import CustomUser
+from .models import CustomUser, UserProfile
 import re
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError as DjangoValidationError
 
+#CustmUser serialization.
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['username', 'password', 'password_confirm', 'email']
+        fields = ['id', 'username', 'password', 'password_confirm', 'email']
 
 #Field-level validation.
     #Username.
@@ -63,3 +64,10 @@ class UserSerializer(serializers.ModelSerializer):
         if data['password'] != data['password_confirm']:
             raise serializers.ValidationError("Passwords do not match.")
         return data
+
+
+#UserProfile serialization.
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ['id', 'username', 'bio', 'avatar', 'location', 'date_of_birth']

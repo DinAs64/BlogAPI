@@ -9,9 +9,17 @@ class PostSerializer(serializers.ModelSerializer):
         model = Post
         fields = ["title", "content", "author", "create_at", "updated_at"]
 
-    def 
+    def validate_title(self, value):
+        pass
+    def validate_content(self, value):
+        pass
+    def validate_author(self, value):
+        pass
+   
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ["post", "author", "content", "create_at"]
         
+    def validate_content(self, value):
+        pass

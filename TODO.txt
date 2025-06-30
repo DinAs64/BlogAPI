@@ -1,2 +1,1 @@
-users serializers validations
-blog serializers
+blog validations
