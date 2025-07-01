@@ -1,21 +1,27 @@
 from rest_framework import serializers
 from .models import CustomUser, UserProfile
 import re
+from django.db import models
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError as DjangoValidationError
 
-#CustmUser serialization.
+#CustomUser serialization.
 class UserSerializer(serializers.ModelSerializer):
+    password_confirm = serializers.CharField(max_length=100)
     class Meta:
         model = CustomUser
-        fields = ['id', 'username', 'password', 'password_confirm', 'email']
+        fields = ['id', 'username', 'password', 'email', 'password_confirm']
+        extra_kwargs = {
+            'password_confirm' : {'write_only': True},
+            'email' : {'required': True},
+        }
 
 #Field-level validation.
     #Username.
     def validate_username(self, value):
         # 1. Must be at least 6 characters.
-        if len(value) < 6:
-            raise serializers.ValidationError("Username must be at least 12 characters.")
+        if len(value) < 5:
+            raise serializers.ValidationError("Username must be at least 5 characters.")
         
         # 2. Check uniqueness.
         if CustomUser.objects.filter(username=value).exists():
@@ -49,7 +55,7 @@ class UserSerializer(serializers.ModelSerializer):
     def validate_email(self, value):
         # 1 Normalize and Check uniqueness.
         mail = value.strip().lower()
-        if CustomUser.objects.filter(email==mail).exists():
+        if CustomUser.objects.filter(email=mail).exists():
             raise serializers.ValidationError("Email already in  use.")
         # 2 Check format.
         try:
@@ -64,6 +70,11 @@ class UserSerializer(serializers.ModelSerializer):
         if data['password'] != data['password_confirm']:
             raise serializers.ValidationError("Passwords do not match.")
         return data
+    
+    #Override create(). Using 'create_us' to hash the pass and discard 'password_confirm'.
+    def create(self, validated_data):
+        validated_data.pop("password_confirm")
+        return CustomUser.objects.create_user(**validated_data)
 
 
 #UserProfile serialization.

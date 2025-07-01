@@ -9,7 +9,6 @@ class CustomUser(models.Model):
 class UserProfile(models.Model):
     username = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     bio = models.TextField(blank=True)
-    #avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
     location = models.CharField(max_length=100, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
 

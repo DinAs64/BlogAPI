@@ -7,9 +7,15 @@ from rest_framework.mixins import ListModelMixin, CreateModelMixin, RetrieveMode
 from .models import CustomUser, UserProfile
 from .serializers import UserSerializer, UserProfileSerializer
 from blog.permissions import IsAuthorOrAdmin, IsUser
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 
-#USER_PROFILE *APIViews.
+#USER_LOGIN.
+class UserLoginView(ListAPIView, CreateAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [AllowAny]
+
+#USER_PROFILE.
 class UserProfileListCreateView(ListAPIView, CreateAPIView):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
