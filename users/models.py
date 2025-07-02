@@ -1,17 +1,25 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from .managers import UserManager
 
-class CustomUser(models.Model):
-    username = models.CharField(max_length=50)
-    password = models.CharField(max_length=50)
-    email = models.EmailField(max_length= 50)
+#AbstrackBaseUser password already defined.
+class User(AbstractBaseUser):
+    username = models.CharField(max_length=50, unique=True)
+    email = models.EmailField(max_length= 50, unique=True)
+
+    objects = UserManager()
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+
+    def __str__(self):
+        return self.username or self.email
 
 class UserProfile(models.Model):
-    username = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     bio = models.TextField(blank=True)
     location = models.CharField(max_length=100, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
 
     def __str__(self):
-        return f"{self.user.username}'s profile"
-    
+        return f"{self.user}'s profile"
+     

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser, UserProfile
+from .models import User, UserProfile
 import re
 from django.db import models
 from django.core.validators import validate_email
@@ -7,12 +7,12 @@ from django.core.exceptions import ValidationError as DjangoValidationError
 
 #CustomUser serialization.
 class UserSerializer(serializers.ModelSerializer):
-    password_confirm = serializers.CharField(max_length=100)
+    password_confirm = serializers.CharField(write_only=True)
     class Meta:
-        model = CustomUser
-        fields = ['id', 'username', 'password', 'email', 'password_confirm']
+        model = User
+        fields = ['username', 'password', 'password_confirm', 'email']
         extra_kwargs = {
-            'password_confirm' : {'write_only': True},
+            'password' : {'write_only': True},
             'email' : {'required': True},
         }
 
@@ -24,7 +24,7 @@ class UserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Username must be at least 5 characters.")
         
         # 2. Check uniqueness.
-        if CustomUser.objects.filter(username=value).exists():
+        if User.objects.filter(username=value).exists():
             raise serializers.ValidationError("Username already in use.")
 
         # 3. Check alphanumeric.
@@ -33,9 +33,11 @@ class UserSerializer(serializers.ModelSerializer):
         
         # 4. Forbidden usernames.
         blocked = ['admin', 'root', 'superuser']
-        if value.lower in blocked:
+        if value.lower() in blocked:
             raise serializers.ValidationError("This username is not allowed.")
         
+        return value
+    
     #Password.
     def validate_password(self, value):
         # Check length and characters with regex.
@@ -55,15 +57,15 @@ class UserSerializer(serializers.ModelSerializer):
     def validate_email(self, value):
         # 1 Normalize and Check uniqueness.
         mail = value.strip().lower()
-        if CustomUser.objects.filter(email=mail).exists():
+        if User.objects.filter(email=mail).exists():
             raise serializers.ValidationError("Email already in  use.")
         # 2 Check format.
         try:
             validate_email(value)
         except DjangoValidationError:
             raise serializers.ValidationError("Email is not valid.")
-       
-
+        return value
+    
 #Object-level validation.
     #Password.
     def validate(self, data):
@@ -74,11 +76,11 @@ class UserSerializer(serializers.ModelSerializer):
     #Override create(). Using 'create_us' to hash the pass and discard 'password_confirm'.
     def create(self, validated_data):
         validated_data.pop("password_confirm")
-        return CustomUser.objects.create_user(**validated_data)
-
+        user = User.objects.create_user(**validated_data)
+        return user
 
 #UserProfile serialization.
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
-        fields = ['id', 'username', 'bio', 'avatar', 'location', 'date_of_birth']
+        fields = ['user', 'bio', 'location', 'date_of_birth']

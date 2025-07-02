@@ -1,4 +1,4 @@
-from rest_framework.permissions import BasePermission, IsAuthenticated
+from rest_framework.permissions import BasePermission, IsAuthenticated, SAFE_METHODS
 
 #Permission so only the Author or the Admin can edit the post and/or comment.
 class IsAuthorOrAdmin(BasePermission):
@@ -8,6 +8,9 @@ class IsAuthorOrAdmin(BasePermission):
             )
     
 #Permission so only the User can edit the profile.
-class IsUser(BasePermission):
+class IsOwner(BasePermission):
     def has_object_permission(self, request, view, obj):
-        return request.user.is_authenticated and request.user == obj.author
+        if request.method in SAFE_METHODS:
+            return True
+        return request.user == obj.user
+
