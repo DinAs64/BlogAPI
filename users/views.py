@@ -1,11 +1,5 @@
 from django.shortcuts import render
-from rest_framework.generics import (
-    ListAPIView, CreateAPIView,
-    RetrieveUpdateDestroyAPIView
-)
 from rest_framework.viewsets import ModelViewSet
-from django.contrib.auth import authenticate
-from rest_framework import status
 from .models import User, UserProfile
 from .serializers import UserSerializer, UserProfileSerializer
 from blog.permissions import IsAuthorOrAdmin, IsOwner
@@ -18,7 +12,7 @@ class UserLoginViewSet(ModelViewSet):
     permission_classes = [AllowAny]
 
 ####TODO: make the user profile 
-# editable by the owner 
+# editable only by the owner 
 # and 
 #seen by all the users.####
 

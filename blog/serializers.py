@@ -7,19 +7,19 @@ from django.core.validators import validate_email
 class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = ["title", "content", "author", "create_at", "updated_at"]
+        fields = ["title", "content", "author", "created_at", "updated_at"]
 
     def validate_title(self, value):
-        pass
-    def validate_content(self, value):
-        pass
-    def validate_author(self, value):
-        pass
+        if value is None:
+            raise serializers.ValidationError("Title is required")
+        return value
+    
    
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        fields = ["post", "author", "content", "create_at"]
-        
+        fields = ["post", "author", "content", "created_at"]
+        read_only_fields = ['author', 'created_at']
+
     def validate_content(self, value):
         pass

@@ -1,73 +1,46 @@
 from django.shortcuts import render
-from rest_framework.generics import GenericAPIView
-from rest_framework.mixins import (
-    CreateModelMixin, ListModelMixin, RetrieveModelMixin,
-    UpdateModelMixin, DestroyModelMixin
-)
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AND
 from .permissions import IsAuthorOrAdmin
 from .models import Post, Comment
 from .serializers import PostSerializer, CommentSerializer
 
-
-#POST GenericsViews + Mixins.
+#POST views.
 # 1. Create and Read with user-login permission.
-class PostListCreateView(
-    GenericAPIView, CreateModelMixin,
-    ListModelMixin
-    ):
+class PostListCreateView(ListCreateAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
-        return self.list(request)
-    def post(self, request):
-        return self.create(request)
-
 # 2. Update, Delete and Read-one with author or admin permission.   
-class PostRetriveUpdateDestroyView(
-    GenericAPIView, RetrieveModelMixin,
-    UpdateModelMixin, DestroyModelMixin
-    ):
+class PostRetriveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     permission_classes = [IsAuthorOrAdmin]
 
-    def get(self, request):
-        return self.retrive(request)
-    def put(self, request):
-        return self.update(request)
-    def destroy(self, request):
-        return self.destroy(request)
-
-#COMMENT GenericViews + Mixins.
+#COMMENT views.
 # 1. Create and Read with user-login permission.
-class CommentListCreateView(
-    GenericAPIView, ListModelMixin,
-    CreateModelMixin
+class CommentListCreateView(ListCreateAPIView
 ):
-    queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
-        return self.list(request)
-    def post(self, request):
-        return self.create(request)
+    def get_queryset(self):
+        post_pk = self.kwargs['post_pk']
+        return Comment.objects.filter(post_id=post_pk)
     
+    def perform_create(self, serializer):
+        post_pk = self.kwargs['post_pk']
+        post = Comment.objects.filter(post_id=post_pk)
+        serializer.save(post=post
+                        )
 # 2. Update, Delete and Read-one with author or admin permission.   
-class CommentRetriveUpdateDestroy(
-    GenericAPIView, RetrieveModelMixin,
-    UpdateModelMixin, DestroyModelMixin
+class CommentRetriveUpdateDestroy(RetrieveUpdateDestroyAPIView
 ):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [IsAuthorOrAdmin]
 
-    def get(self, request):
-        return self.retrieve(request)
-    def put(self, request):
-        return self.update(request)
-    def destroy(self, request):
-        return self.destroy(request)
+    def get_queryset(self):
+        post_pk = self.kwargs['post_pk']
+        return Comment.objects.filter(post_id=post_pk)
