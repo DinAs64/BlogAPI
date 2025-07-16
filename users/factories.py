@@ -7,6 +7,8 @@ class UserFactory(factory.django.DjangoModelFactory):
 
     username = factory.Sequence(lambda n: f"user{n}")
     password = factory.PostGenerationMethodCall('set_password', 'testpass')
+    email = factory.Sequence(lambda n: f"user{n}@example.com")
+    is_staff = True
 
 class UserProfileFactory(factory.django.DjangoModelFactory):
     class Meta:
