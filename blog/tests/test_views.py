@@ -54,7 +54,7 @@ class CommentViewTests(APITestCase):
 
     def test_list_comments(self):
         CommentFactory.create_batch(3, post=self.post)
-        url = reverse('comment-list-create', kwargs={'post_pk': self.post.pk})
+        url = reverse('comment-list', kwargs={'post_pk': self.post.pk})
 
         response = self.client.get(url)
 
@@ -62,7 +62,7 @@ class CommentViewTests(APITestCase):
         self.assertEqual(len(response.data), 3)
 
     def test_create_comment(self):
-        url = reverse('comment-list-create', kwargs={'post_pk': self.post.pk})
+        url = reverse('comment-list', kwargs={'post_pk': self.post.pk})
         data = {"content": "Nice blog post!"}
 
         response = self.client.post(url, data)

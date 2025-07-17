@@ -22,5 +22,5 @@ class UserProfileViewSet(ModelViewSet):
     permission_classes = [IsOwner]
 
     def get_queryset(self):
-        user_id = self.kwargs['user_pk']
+        user_id = self.kwargs['user_register_pk']
         return UserProfile.objects.filter(user__id=user_id)

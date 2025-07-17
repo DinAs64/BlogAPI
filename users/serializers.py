@@ -81,6 +81,8 @@ class UserSerializer(serializers.ModelSerializer):
 
 #UserProfile serialization.
 class UserProfileSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source="user.username", read_only=True)
+
     class Meta:
         model = UserProfile
         fields = ['user', 'bio', 'location', 'date_of_birth']
