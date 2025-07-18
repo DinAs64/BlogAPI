@@ -13,13 +13,20 @@ class PostSerializer(serializers.ModelSerializer):
         if value is None:
             raise serializers.ValidationError("Title is required")
         return value
+
+    def validate_content(self, value):
+        if value is None:
+            raise serializers.ValidationError("Text is required")
+        return value
     
    
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ["post", "author", "content", "created_at"]
-        read_only_fields = ['author', 'created_at']
+        read_only_fields = ['created_at']
 
     def validate_content(self, value):
-        pass
+        if value is None:
+            raise serializers.ValidationError("Comment is required")
+        return value

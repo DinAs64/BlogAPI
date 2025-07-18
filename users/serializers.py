@@ -10,7 +10,7 @@ class UserSerializer(serializers.ModelSerializer):
     password_confirm = serializers.CharField(write_only=True)
     class Meta:
         model = User
-        fields = ['username', 'password', 'password_confirm', 'email']
+        fields = ['id', 'username', 'password', 'password_confirm', 'email']
         extra_kwargs = {
             'password' : {'write_only': True},
             'email' : {'required': True},
@@ -85,4 +85,4 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ['user', 'bio', 'location', 'date_of_birth']
+        fields = ['user', 'username', 'bio', 'location', 'date_of_birth']
