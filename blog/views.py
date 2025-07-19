@@ -31,9 +31,8 @@ class CommentListCreateView(ListCreateAPIView
     
     def perform_create(self, serializer):
         post_pk = self.kwargs['post_pk']
-        post = Comment.objects.filter(post_id=post_pk)
-        serializer.save(post=post
-                        )
+        post = Post.objects.get(pk=post_pk)
+        serializer.save(author=self.request.user, post=post)
 # 2. Update, Delete and Read-one with author or admin permission.   
 class CommentRetriveUpdateDestroy(RetrieveUpdateDestroyAPIView
 ):
@@ -43,4 +42,4 @@ class CommentRetriveUpdateDestroy(RetrieveUpdateDestroyAPIView
 
     def get_queryset(self):
         post_pk = self.kwargs['post_pk']
-        return Comment.objects.filter(post_id=post_pk)
+        return Comment.objects.filter(post__pk=post_pk)

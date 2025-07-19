@@ -12,16 +12,26 @@ User = get_user_model()
 class UserLoginViewTests(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user(
-            username="tester", email="tester@example.com", password="pass1234"    
+            username="tester", 
+            email="tester@example.com", 
+            password="pass1234"    
         )
         self.other_user = User.objects.create_user(
-            username="hacker", email="hacker@example.com", password="pass1234"
+            username="hacker", 
+            email="hacker@example.com", 
+            password="pass1234"
         )
         self.profile = UserProfile.objects.create(
-            user=self.user, bio="testing_stuff", location="TheValley", date_of_birth=None
+            user=self.user, 
+            bio="testing_stuff", 
+            location="TheValley", 
+            date_of_birth=None
         )
         self.other_profile = UserProfile.objects.create(
-            user=self.other_user, bio="hacking_stuff", location="Alcatraz", date_of_birth=None
+            user=self.other_user, 
+            bio="hacking_stuff", 
+            location="Alcatraz", 
+            date_of_birth=None
         )
         self.url = reverse("user_profile-list", kwargs={"user_register_pk": self.user.pk})
         self.other_url = reverse("user_profile-list", kwargs={"user_register_pk": self.other_user.pk})
@@ -40,16 +50,17 @@ class UserLoginViewTests(APITestCase):
         self.assertEqual(response.data[0]["username"], self.user.username)
 
     def test_user_cannot_view_other_profile(self):
-        self.client.login(username="tester", password="pass1234")
-        response = self.client.get(self.url)
+        self.client.login(username="hacker", password="pass1234", email="hacker@example.com")
+        response = self.client.get(self.other_url)        
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
     
     def test_user_can_update_own_profile(self):
         self.client.login(username="tester", password="pass1234")
-        response = self.client.get(self.url, {"bio": "Updated bio"})
+        response = self.client.patch(self.url, {"bio": "Updated bio"}, content_type='application/json')
+        
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
         self.profile.refresh_from_db()
-        self.profile.save()
         self.assertEqual(self.profile.bio, "Updated bio")
 
     def test_user_cannot_update_other_profile(self):

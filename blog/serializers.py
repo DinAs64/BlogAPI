@@ -24,7 +24,7 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ["post", "author", "content", "created_at"]
-        read_only_fields = ['created_at']
+        read_only_fields = ['created_at', 'post', 'author']
 
     def validate_content(self, value):
         if value is None:
