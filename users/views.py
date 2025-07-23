@@ -4,17 +4,16 @@ from .models import User, UserProfile
 from .serializers import UserSerializer, UserProfileSerializer
 from blog.permissions import IsAuthorOrAdmin, IsOwner
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
+from rest_framework.throttling import ScopedRateThrottle
 
-#User login with full crud.
+#User login with permission and throttling.
 class UserLoginViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
 
-####TODO: make the user profile 
-# editable only by the owner 
-# and 
-#seen by all the users.####
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'login'
 
 #User profile, nested for each user id.
 class UserProfileViewSet(ModelViewSet):
