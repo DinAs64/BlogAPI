@@ -20,6 +20,7 @@ class UserLoginViewSet(ModelViewSet):
 class UserProfileViewSet(ModelViewSet):
     serializer_class = UserProfileSerializer
     permission_classes = [IsOwner]
+    lookup_field = "id"
 
     def get_queryset(self):
         user_id = self.kwargs['user_register_pk']

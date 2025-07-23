@@ -36,17 +36,21 @@ class PostSerializerTest(TestCase):
 
 class CommentSerializerTest(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username='commenter', password='pass1234', email="commenter@example.com")
+        self.user = User.objects.create_user(
+            username='commenter', 
+            password='pass1234', 
+            email="commenter@example.com"
+            )
         self.post = Post.objects.create(
             title = "Commentable Post",
             content = "Post to get commented",
             author = self.user
-        )
+            )
         self.comment = Comment.objects.create(
             post = self.post,
             content = "Comment text",
             author = self.user
-        )
+            )
 
     def test_comment_serializer_valid(self):
         serializer = CommentSerializer(instance=self.comment)
@@ -64,16 +68,18 @@ class CommentSerializerTest(TestCase):
         serializer = CommentSerializer(data=data)
         self.assertTrue(serializer.is_valid(), serializer.errors)
         comment = serializer.save()
+        
         self.assertEqual(comment.content, "Nice stuff")
         self.assertEqual(comment.post, self.post)
 
     def test_comment_serializer_invalid(self):
         data = {
-            "post": "",
+            "post": None,
             "author": self.user.id,
             "content": ""
         }
         serializer = CommentSerializer(data=data)
         self.assertFalse(serializer.is_valid())
+        print(serializer.errors)
         self.assertIn('post', serializer.errors)
         self.assertIn('content', serializer.errors)

@@ -1,4 +1,4 @@
-from rest_framework.test import APIClient, APITestCase
+from rest_framework.test import APIClient, APITestCase, force_authenticate
 from rest_framework import status
 from django.urls import reverse
 
@@ -33,36 +33,31 @@ class UserLoginViewTests(APITestCase):
             location="Alcatraz", 
             date_of_birth=None
         )
-        self.url = reverse("user_profile-list", kwargs={"user_register_pk": self.user.pk})
-        self.other_url = reverse("user_profile-list", kwargs={"user_register_pk": self.other_user.pk})
+        self.url = reverse("user_profile-detail", kwargs={"user_register_pk": self.user.pk, "id": self.profile.pk})
+        self.other_url = reverse("user_profile-detail", kwargs={"user_register_pk": self.other_user.pk, 'id': self.other_profile.pk})
 
     """def test_requires_auth(self):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 """
     def test_user_can_view_own_profile(self):
-        self.client.login(username="tester", password="pass1234")
+        self.client.force_authenticate(user=self.user)
         response = self.client.get(self.url)
-
-        #print(response.data)
-
         self.assertEqual(response.status_code, status.HTTP_200_OK )
-        self.assertEqual(response.data[0]["username"], self.user.username)
+        self.assertEqual(response.data["username"], self.user.username)
 
-    def test_user_cannot_view_other_profile(self):
-        self.client.login(username="hacker", password="pass1234", email="hacker@example.com")
-        response = self.client.get(self.other_url)        
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-    
     def test_user_can_update_own_profile(self):
-        self.client.login(username="tester", password="pass1234")
+        self.client.force_authenticate(user=self.user)
         response = self.client.patch(self.url, {"bio": "Updated bio"}, content_type='application/json')
-        
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
         self.profile.refresh_from_db()
         self.assertEqual(self.profile.bio, "Updated bio")
 
+    def test_user_cannot_view_other_profile(self):
+        self.client.login(username="hacker", password="pass1234")
+        response = self.client.get(self.url)        
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+    
     def test_user_cannot_update_other_profile(self):
         self.client.login(username="tester", password="pass1234")
         response = self.client.get(self.other_url, {"bio": "Hacked"})

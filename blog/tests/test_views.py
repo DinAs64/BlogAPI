@@ -88,9 +88,11 @@ class CommentViewTests(APITestCase):
 
     def test_update_comment_by_author(self):
         comment = CommentFactory(post=self.post, content="Original", author=self.user)
+        self.client.force_login(self.user)
+
         url = reverse('comment-detail', kwargs={'post_pk': self.post.pk, 'pk': comment.pk})
 
-        response = self.client.put(url, {"content": "Updated"})
+        response = self.client.patch(url, {"content": "Updated"})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['content'], "Updated")

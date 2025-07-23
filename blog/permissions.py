@@ -10,5 +10,6 @@ class IsAuthorOrAdmin(BasePermission):
 #Permission so only the User can edit the profile.
 class IsOwner(BasePermission):
     def has_object_permission(self, request, view, obj):
+        print(f"Checking object permission for user: {request.user} vs {obj.user}")
         return request.user == obj.user
 
