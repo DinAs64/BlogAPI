@@ -73,6 +73,12 @@ Implemented via DRF’s built-in `SearchFilter`, `OrderingFilter`, and `django-f
   - Prevents brute-force and spam attacks
 
 ---
+🚀 Redis Caching (Comments)
+
+- Nested comment list views are cached per post and query string using Redis.
+- All related comment caches are invalidated automatically when a new comment is posted.
+
+---
 
 🌐 URL Routing
 
@@ -100,6 +106,24 @@ Implemented via DRF’s built-in `SearchFilter`, `OrderingFilter`, and `django-f
 - Factories per app
 - All tests pass with high coverage
 
+---
+
+🐳 Docker Setup
+
+This project uses Docker and Docker Compose to run the Django API with MySQL and Redis services.
+
+- How to run:
+  - docker-compose up --build
+  - docker-compose exec web python manage.py migrate
+  - docker-compose exec web python manage.py createsuperuser
+- Visit http://localhost:8000 to access the API.
+
+- Included Services:
+  - web: Django app running with Gunicorn
+  - db: MySQL database
+  - redis: Redis caching
+
+Everything is configured to work together out-of-the-box, so you get a consistent development environment without manual installs.
 ---
 
 ⚙️ Environment & Configuration

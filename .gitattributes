@@ -1,0 +1,6 @@
+ECHO is on.
+
+*.css text eol=lf
+*.js text eol=lf
+*.svg text eol=lf
+

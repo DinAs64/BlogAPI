@@ -4,8 +4,10 @@ from django.utils.translation import gettext as _
 class UserManager(BaseUserManager):
 
     def create_user(self, email, password=None, username=None, **extra_fields):
-        if not email or not username:
-            raise ValueError("Users must have a username/email address.")
+        if not email:
+            raise ValueError("Users must have an email address.")
+        if not username:
+            username = email
         email = self.normalize_email(email)
         user = self.model(email=email, username=username, **extra_fields)
         user.set_password(password)
